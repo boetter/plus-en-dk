@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { slug } from './slug'
 
 const url = import.meta.env.VITE_SUPABASE_URL
 const key = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -27,7 +28,9 @@ export async function createCloudProfile(name) {
     if (error) throw error
     user = data.user
   }
-  const base = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'koncertven'
+  // Databasen kræver mindst to tegn, så "J" eller "Å" skal have et haleled på.
+  let base = slug(name)
+  if (base.length < 2) base = base ? `${base}-plusen` : 'koncertven'
   let username = base
   for (let attempt = 0; attempt < 5; attempt += 1) {
     const { data, error } = await supabase.from('profiles').upsert({ id: user.id, display_name: name, username }, { onConflict: 'id' }).select().single()

@@ -1,0 +1,46 @@
+name: Hold Supabase vågen
+
+# Supabase sætter gratis-projekter på pause efter en uges inaktivitet. Et enkelt
+# opslag om dagen tæller som aktivitet og nulstiller timeren.
+on:
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slå op i profiles
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_ANON_KEY:-}" ]; then
+            echo "::error::Sæt SUPABASE_URL og SUPABASE_ANON_KEY under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+          endpoint="${SUPABASE_URL%/}/rest/v1/profiles?select=id&limit=1"
+
+          for forsoeg in 1 2 3; do
+            # curl skriver selv 000, hvis forbindelsen slet ikke kom i gang.
+            status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 \
+              -H "apikey: ${SUPABASE_ANON_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+              "$endpoint" || true)
+            status=${status:-000}
+
+            if [ "$status" = "200" ]; then
+              echo "Supabase svarede 200 — projektet er vågent."
+              exit 0
+            fi
+
+            echo "Forsøg $forsoeg gav HTTP $status."
+            if [ "$forsoeg" -lt 3 ]; then sleep $((forsoeg * 10)); fi
+          done
+
+          echo "::error::Supabase svarede ikke 200 efter tre forsøg (sidst: $status). Projektet kan være pauset, eller nøglen kan være skiftet."
+          exit 1

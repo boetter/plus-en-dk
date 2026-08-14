@@ -1,3 +1,4 @@
+import{slug}from'./slug';
 export const venues = [
  ['store-vega','Store VEGA','Vesterbro','Enghavevej 40','https://vega.dk/kalender'],['lille-vega','Lille VEGA','Vesterbro','Enghavevej 40','https://vega.dk/kalender'],['pumpehuset','Pumpehuset','Indre By','Studiestræde 52','https://pumpehuset.dk/koncerter/'],['loppen','Loppen','Christianshavn','Sydområdet 4B','https://loppen.dk/kalender/'],['koncerthuset','DR Koncerthuset','Ørestad','Ørestads Boulevard 13','https://www.drkoncerthuset.dk/kalender/'],['graa-hal','Den Grå Hal','Christiania','Refshalevej 2','https://www.dengraahal.dk/'],['hotel-cecil','Hotel Cecil','Indre By','Niels Hemmingsens Gade 10','https://hotelcecil.dk/'],['bremen','Bremen Teater','Indre By','Nyropsgade 39-41','https://www.brementeater.dk/'],['poolen','Poolen','Refshaleøen','Refshalevej 189','https://poolen.dk/'],['rust','Rust','Nørrebro','Guldbergsgade 8','https://rust.dk/']
 ].map(([id,name,area,address,url])=>({id,name,area,address,url}));
@@ -41,7 +42,9 @@ const raw=`2026-08-17|Soulfly|lille-vega|metal
 2026-12-01|Artemas|store-vega|pop
 2026-12-05|ROYA|store-vega|pop
 2026-12-18|The Ocean|lille-vega|metal`;
-export const concerts=raw.split('\n').map((x,i)=>{const [date,artist,venueId,genre]=x.split('|');return{id:String(i+1),date,artist,venueId,genre,price:null,url:venueId.includes('vega')?`https://vega.dk/kalender`:venues.find(v=>v.id===venueId)?.url}}).sort((a,b)=>a.date.localeCompare(b.date));
+// Id'et udledes af dato og artist, ikke af rækkefølgen i listen. Et løbenummer ville
+// rykke sig, hver gang en koncert tilføjes, og så pegede alle gemte svar på de forkerte koncerter.
+export const concerts=raw.split('\n').map(x=>{const [date,artist,venueId,genre]=x.split('|');return{id:`${date}-${slug(artist)}`,date,artist,venueId,genre,price:null,url:venueId.includes('vega')?`https://vega.dk/kalender`:venues.find(v=>v.id===venueId)?.url}}).sort((a,b)=>a.date.localeCompare(b.date));
 export const venueById=id=>venues.find(v=>v.id===id);
 // Listen er statisk, så uden dette filter viser forsiden koncerter der for længst er afholdt.
 const today=()=>new Date().toISOString().slice(0,10);

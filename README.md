@@ -20,6 +20,12 @@ npm run build   # produktionsbuild i dist/
 
 Uden Supabase-variabler kører appen stadig: forsiden, spillestederne og søgningen virker, og en gul banner fortæller, at cloud-delen mangler opsætning.
 
+### Hold projektet vågent
+
+Supabase pauser gratis-projekter efter en uges inaktivitet. `.github/workflows/supabase-ping.yml` slår op i `profiles` én gang i døgnet, hvilket tæller som aktivitet og nulstiller timeren. Tilføj `SUPABASE_URL` og `SUPABASE_ANON_KEY` under **Settings → Secrets and variables → Actions**, og kør jobbet én gang manuelt via **Run workflow** for at bekræfte, at det svarer 200.
+
+GitHub deaktiverer planlagte workflows i repositories uden aktivitet i 60 dage. Ligger projektet stille så længe, skal jobbet slås til igen på Actions-fanen.
+
 ## Netlify
 
 Forbind repository'et til Netlify. `netlify.toml` sætter build-kommando, Node-version, SPA-redirect og cache-headers. Tilføj `VITE_SUPABASE_URL` og `VITE_SUPABASE_ANON_KEY` under **Site configuration → Environment variables**. Buildet er rent statisk; alle vedvarende data sendes direkte til Supabase og beskyttes af Row Level Security.
@@ -38,6 +44,7 @@ Den public anon key må gerne ligge i browseren. SQL-politikkerne gør profiler 
 | --- | --- |
 | `src/main.jsx` | Hele UI'et — sider, komponenter og app-state |
 | `src/data.js` | Spillesteder og koncertliste (statisk) + filtrering af overståede koncerter |
+| `src/slug.js` | Slugify med dansk æ/ø/å — bruges til både koncert-id'er og brugernavne |
 | `src/supabase.js` | Klient, profiler og RSVP'er |
 | `src/styles.css` | Designsystemet |
 | `supabase/schema.sql` | Tabeller, RLS-politikker og indeks |
@@ -45,3 +52,5 @@ Den public anon key må gerne ligge i browseren. SQL-politikkerne gør profiler 
 | `docs/forside-1c.html` | HTML-prototypen af forsiden (designreference, ikke en del af buildet) |
 
 Koncertlisten i `src/data.js` er statisk og skal opdateres i hånden. `upcomingConcerts()` filtrerer automatisk afholdte koncerter fra, så listen ikke rådner mellem opdateringer.
+
+Koncert-id'et udledes af dato og artist (`2026-08-17-soulfly`), ikke af rækkefølgen i listen. Det er vigtigt: `rsvps.concert_id` gemmer netop den streng, så et løbenummer ville flytte alle gemte svar over på de forkerte koncerter, næste gang listen blev redigeret. Ret aldrig dato eller artistnavn på en koncert, der allerede har svar — tilføj i stedet en ny linje.

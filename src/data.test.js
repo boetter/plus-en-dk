@@ -23,6 +23,13 @@ describe('koncertdata', () => {
     expect(new Set(concerts.map(c => c.id)).size).toBe(concerts.length)
   })
 
+  it('udleder id af dato og artist, ikke af rækkefølgen', () => {
+    // Gemte RSVP'er peger på id'et, så det skal overleve at listen redigeres.
+    const soulfly = concerts.find(c => c.artist === 'Soulfly')
+    expect(soulfly.id).toBe('2026-08-17-soulfly')
+    for (const c of concerts) expect(c.id).toMatch(/^\d{4}-\d{2}-\d{2}-[a-z0-9-]+$/)
+  })
+
   it('peger kun på spillesteder der findes', () => {
     for (const c of concerts) expect(venueById(c.venueId), c.venueId).toBeTruthy()
   })
