@@ -1,1 +1,27 @@
-{"name":"plus-en","private":true,"version":"1.0.0","type":"module","scripts":{"dev":"vite","build":"vite build","preview":"vite preview","test":"vitest run"},"dependencies":{"@vitejs/plugin-react":"latest","lucide-react":"latest","react":"latest","react-dom":"latest","typescript":"latest","vite":"latest"},"devDependencies":{"jsdom":"latest","vitest":"latest"}}
+{
+  "name": "plus-en",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.109.0",
+    "lucide-react": "^1.31.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.5",
+    "jsdom": "^30.0.1",
+    "vite": "^8.2.1",
+    "vitest": "^4.1.10"
+  }
+}
