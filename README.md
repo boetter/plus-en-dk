@@ -26,7 +26,7 @@ Forbind repository'et til Netlify. `netlify.toml` sætter build-kommando, Node-v
 
 ## Delelinks
 
-En liste deles som `plusen.dk/<brugernavn>`. SPA-redirect'et i `netlify.toml` sender ruten til `index.html`, og appen slår brugernavnet op i Supabase. Ældre links på formen `?u=<brugernavn>` virker fortsat.
+En liste deles som `<værtsnavn>/<brugernavn>` — `plusen.dk/anna` i produktion, `dit-site.netlify.app/anna` under udvikling. Værtsnavnet læses fra browseren, så delekortet altid viser det link, knappen rent faktisk kopierer. SPA-redirect'et i `netlify.toml` sender ruten til `index.html`, og appen slår brugernavnet op i Supabase. Ældre links på formen `?u=<brugernavn>` virker fortsat.
 
 ## Datasikkerhed
 
