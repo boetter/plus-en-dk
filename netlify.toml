@@ -2,7 +2,28 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  NODE_VERSION = "22"
+
+# Pæne delelinks (plusen.dk/anna) og alle andre ruter serveres af SPA'en.
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Vite giver assets et indholds-hash i filnavnet, så de kan caches permanent.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

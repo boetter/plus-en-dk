@@ -41,5 +41,10 @@ const raw=`2026-08-17|Soulfly|lille-vega|metal
 2026-12-01|Artemas|store-vega|pop
 2026-12-05|ROYA|store-vega|pop
 2026-12-18|The Ocean|lille-vega|metal`;
-export const concerts=raw.split('\n').map((x,i)=>{const [date,artist,venueId,genre]=x.split('|');return{id:String(i+1),date,artist,venueId,genre,price:null,url:venueId.includes('vega')?`https://vega.dk/kalender`:venues.find(v=>v.id===venueId)?.url}});
+export const concerts=raw.split('\n').map((x,i)=>{const [date,artist,venueId,genre]=x.split('|');return{id:String(i+1),date,artist,venueId,genre,price:null,url:venueId.includes('vega')?`https://vega.dk/kalender`:venues.find(v=>v.id===venueId)?.url}}).sort((a,b)=>a.date.localeCompare(b.date));
 export const venueById=id=>venues.find(v=>v.id===id);
+// Listen er statisk, så uden dette filter viser forsiden koncerter der for længst er afholdt.
+const today=()=>new Date().toISOString().slice(0,10);
+export const upcomingConcerts=()=>{const t=today();return concerts.filter(c=>c.date>=t)};
+// Kun spillesteder med kommende koncerter — ellers fører filterchippen til en tom liste.
+export const activeVenues=items=>{const ids=new Set(items.map(c=>c.venueId));return venues.filter(v=>ids.has(v.id))};
